@@ -3,6 +3,7 @@ import GptService from "../services/gpt-services.js";
 
 class GptController {
     private userService: GptService
+    
 
     constructor(gptService: GptService) {
         this.userService = gptService
@@ -19,6 +20,18 @@ class GptController {
             res.status(500).json({error:error.message})
         }
     }
+    getAnimation = async (req: Request, res: Response) => {
+        try {
+            const dropboxPath = await this.userService.getManimCode();
+            res.status(200).json({ dropboxPath });
+        } catch (err: any) {
+            res.status(500).send('Error generating Manim animation');
+        }
+    }
 }
 
 export default GptController;
+
+function getManimCode() {
+    throw new Error('Function not implemented.');
+}

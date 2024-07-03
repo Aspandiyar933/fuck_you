@@ -5,6 +5,7 @@ import Code from "../models/code.model.js";
 import { PythonShell } from 'python-shell';
 import fs from 'fs';
 import path from 'path';
+import dbx from "../dbx.js";
 
 const database = new Database();
 
@@ -62,7 +63,7 @@ export default class GptService {
         }
     }
 
-    async getManimCode(){
+    async getManimCode(): Promise<string> {
         try {
             const codeDoc = await Code.findOne();
             if(!codeDoc){
@@ -94,7 +95,17 @@ export default class GptService {
                 fs.unlinkSync(tempFilePath);
             });
 
+            // Upload to DropBox
+            const fileContent = fs.readFileSync(outputPath);
+            const dropboxResponse = await dbx.filesUpload({
+                path: '/temp_manim.mp4',
+                contents: fileContent
+            });
 
+            // Optionally, delete the local file
+            fs.unlinkSync(outputPath);
+
+            return dropboxResponse.result.path_lower;
         } catch (err) {
             console.error(err);
         } 
