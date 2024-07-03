@@ -7,6 +7,6 @@ const gptService = new GptService();
 const gptController = new GptController(gptService);
 
 gptRouter.post('/generate-and-run-manim/', gptController.getCode);
-gptRouter.get('/get-animation', gptController.getAnimation);
+gptRouter.get('/get-animation/', gptController.getAnimation);
 
 export default gptRouter;
