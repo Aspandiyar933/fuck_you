@@ -9,6 +9,7 @@ class GptController {
         this.userService = gptService
     }
     getCode = async (req: Request, res: Response) => {
+        console.log('Received request to generate Manim code.');
         const { userPrompt } = req.body;
         if (!userPrompt) {
             return res.status(400).json({error:'Prompt is required'})
@@ -21,6 +22,7 @@ class GptController {
         }
     }
     getAnimation = async (req: Request, res: Response) => {
+        console.log('Received request to get animation.');
         try {
             const dropboxPath = await this.userService.getManimCode();
             res.status(200).json({ dropboxPath });
@@ -31,7 +33,3 @@ class GptController {
 }
 
 export default GptController;
-
-function getManimCode() {
-    throw new Error('Function not implemented.');
-}
