@@ -8,6 +8,7 @@ import path from 'path';
 import dbx from "../dbx.js";
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import AWS from 'aws-sdk';  // Updated import
 
 const database = new Database();
 const __filename = fileURLToPath(import.meta.url);
@@ -15,7 +16,10 @@ const __dirname = dirname(__filename);
 
 
 export default class GptService {
+    private s3: AWS.S3;
+    private bucketName: string;
     private systemPrompt: string;
+
     constructor() {
         database.connect();
         this.systemPrompt = `
@@ -31,6 +35,12 @@ export default class GptService {
         }
         If the user prompt is irrelevant, return an empty array of code.
         `;
+        this.s3 = new AWS.S3({
+            region: process.env.AWS_REGION,
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+        });
+        this.bucketName = process.env.AWS_S3_BUCKET_NAME;
     }
     
     async generateManimCode(userPrompt: string) {
@@ -110,7 +120,7 @@ export default class GptService {
             throw err;
         }
     }
-
+    /*
     async saveToDropbox(filePath: string): Promise<string> {
         try {
             const fileContent = fs.readFileSync(filePath);
@@ -128,12 +138,31 @@ export default class GptService {
             throw err;
         }
     }
-    
+    */
+
+    async saveToS3(filePath: string): Promise<string> {
+        try {
+            const fileContent = fs.readFileSync(filePath);
+            const uploadParams = {
+                Bucket: this.bucketName,
+                Key: `manim-animations/${path.basename(filePath)}`,
+                Body: fileContent,
+                ContentType: 'video/mp4'
+            };
+            const data = await this.s3.upload(uploadParams).promise();
+            fs.unlinkSync(filePath);
+            return data.Location;
+        } catch(err) {
+            console.error(err);
+            throw err;
+        }
+    }
+
     async getManimCode(): Promise<string> {
         try {
             const outputPath = await this.runManimCode();
-            const dropboxPath = await this.saveToDropbox(outputPath);
-            return dropboxPath;
+            const s3Url = await this.saveToS3(outputPath);
+            return s3Url;
         } catch (err) {
             console.error(err);
             throw err;

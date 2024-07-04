@@ -20,6 +20,7 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
+    "aws-sdk": "^2.1654.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "dropbox": "^10.34.0",
