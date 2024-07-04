@@ -81,7 +81,7 @@ export default class GptService {
 
     async runManimCode(): Promise<string> {
         try {
-            const codeDoc = await Code.findOne().sort({ _id: -1 }).limit(1);
+            const codeDoc = await Code.findOne().sort({ _id: -1 }).limit(1).catch(() => console.log('error in model'));
             if (!codeDoc) {
                 throw new Error('No code found in the database');
             }

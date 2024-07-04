@@ -2,10 +2,15 @@ import express, { Request, Response } from 'express';
 import Database from './config/db.js';
 import globalRouter from './global-router.js';
 import { logger } from './logger.js';
+import cors from 'cors';
 
 const app = express();
 
 const PORT: number = 3000;
+
+app.use(cors({
+    origin: ['http://yourapp.com', 'http://localhost:5173']
+  }));
 
 const conn = new Database();
 
