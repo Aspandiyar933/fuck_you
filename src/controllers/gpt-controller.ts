@@ -22,12 +22,12 @@ class GptController {
         }
     }
     getAnimation = async (req: Request, res: Response) => {
-        console.log('Received request to get animation.');
         try {
-            const dropboxPath = await this.userService.getManimCode();
-            res.status(200).json({ dropboxPath });
-        } catch (err: any) {
-            res.status(500).send('Error generating Manim animation');
+            const animationPath = await this.userService.getManimCode();
+            res.json({ success: true, path: animationPath });
+        } catch (error) {
+            console.error('Error in getAnimationController:', error);
+            res.status(500).json({ success: false, error: 'Failed to generate animation' });
         }
     }
 }

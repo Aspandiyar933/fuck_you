@@ -2,3 +2,6 @@ dist
 node_modules
 .env
 env_py
+temp_scripts
+output
+media
